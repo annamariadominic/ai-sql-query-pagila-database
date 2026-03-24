@@ -1,6 +1,6 @@
 # AI-Powered PostgreSQL Query & Analysis API
 
-A FastAPI-based system that converts natural language questions into safe PostgreSQL queries, executes them against the Pagila database, and optionally generates analytical summaries.
+A FastAPI-based system that converts natural language questions into safe PostgreSQL queries, executes them against the [Pagila](url) database, and optionally generates analytical summaries.
 
 ---
 
