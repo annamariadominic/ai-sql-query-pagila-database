@@ -41,19 +41,20 @@ def extract_tables_from_sql(sql: str) -> list[str]:
     Avoids false positives like EXTRACT(YEAR FROM ...).
     """
     sql_clean = clean_sql(sql)
-    lines = [line.strip() for line in sql_clean.splitlines() if line.strip()]
+    tokens = sql_clean.replace("\n", " ").split()
 
-    matches = []
-    for line in lines:
-        lower = line.lower()
-        if lower.startswith("from ") or lower.startswith("join "):
-            parts = line.split()
-            if len(parts) >= 2:
-                table = parts[1].strip(",")
-                matches.append(table.lower())
+    tables = []
+    for i, token in enumerate(tokens):
+        token_lower = token.lower()
+
+        if token_lower in ("from", "join"):
+            if i + 1 < len(tokens):
+                table = tokens[i + 1].strip(",")
+                table = table.split(".")[-1]  # remove schema if present
+                tables.append(table.lower())
 
     seen = []
-    for table in matches:
+    for table in tables:
         if table not in seen:
             seen.append(table)
 
