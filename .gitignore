@@ -1,0 +1,6 @@
+.env
+virtual/
+.DS_Store
+app/__pycache__/*
+logs/app.log
+temp.py
