@@ -43,6 +43,45 @@ User question:
     logger.info(f"Generated SQL: {sql}")
     return sql
 
+def repair_sql(question: str, schema_context: str, failed_sql: str, error_message: str) -> str:
+    logger.info("Attempting SQL repair")
+
+    prompt = f"""
+You are an expert PostgreSQL analyst helping repair a failed SQL query.
+
+Database schema context:
+{schema_context}
+
+User question:
+{question}
+
+Previously generated SQL:
+{failed_sql}
+
+Database error message:
+{error_message}
+
+Task:
+- Repair the SQL so it correctly answers the user's question.
+- Use PostgreSQL syntax.
+- Return ONLY the corrected SQL query.
+- Do not include markdown fences.
+- Only generate a read-only query.
+- Prefer explicit JOINs.
+"""
+
+    response = client.chat.completions.create(
+        model=settings.OPENAI_MODEL,
+        messages=[
+            {"role": "system", "content": "You repair PostgreSQL queries conservatively and accurately."},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0,
+    )
+
+    repaired_sql = response.choices[0].message.content.strip()
+    logger.info(f"Repaired SQL: {repaired_sql}")
+    return repaired_sql
 
 def summarize_results(question: str, sql: str, rows: list[dict]) -> str:
     logger.info("Summarizing query results")
