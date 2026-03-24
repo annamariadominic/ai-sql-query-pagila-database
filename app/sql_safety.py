@@ -34,3 +34,20 @@ def is_safe_sql(sql: str) -> tuple[bool, str]:
         return False, "Only SELECT or WITH queries are allowed"
 
     return True, ""
+
+def extract_tables_from_sql(sql: str) -> list[str]:
+    """
+    Naive but useful extraction of tables referenced in FROM and JOIN clauses.
+    """
+    sql_clean = clean_sql(sql)
+
+    pattern = r'\b(?:from|join)\s+([a-zA-Z_][a-zA-Z0-9_]*)'
+    matches = re.findall(pattern, sql_clean, flags=re.IGNORECASE)
+
+    seen = []
+    for table in matches:
+        table_lower = table.lower()
+        if table_lower not in seen:
+            seen.append(table_lower)
+
+    return seen
