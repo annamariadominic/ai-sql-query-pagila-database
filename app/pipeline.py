@@ -6,10 +6,13 @@ from app.sql_safety import clean_sql, is_safe_sql, extract_tables_from_sql
 logger = get_logger(__name__)
 
 
+ANALYSIS_KEYWORDS = ["analyze", "trend", "over time", "fair", "determine"]
+
+
 def run_query_pipeline(question: str) -> dict:
     logger.info(f"Starting pipeline for question: {question}")
 
-    schema_context = get_schema_context()
+    schema_context, schema_tables_available = get_schema_context()
     raw_sql = generate_sql(question, schema_context)
     sql = clean_sql(raw_sql)
 
@@ -24,9 +27,12 @@ def run_query_pipeline(question: str) -> dict:
     rows = run_sql(sql)
 
     analysis = None
+    analysis_triggered_by = None
     lowered = question.lower()
-    if any(keyword in lowered for keyword in ["analyze", "trend", "over time", "fair", "determine"]):
+
+    if any(keyword in lowered for keyword in ANALYSIS_KEYWORDS):
         analysis = summarize_results(question, sql, rows)
+        analysis_triggered_by = "keyword_match"
 
     response = {
         "question": question,
@@ -36,9 +42,11 @@ def run_query_pipeline(question: str) -> dict:
         "trace": {
             "row_count": len(rows),
             "analysis_performed": analysis is not None,
+            "analysis_triggered_by": analysis_triggered_by,
             "sql_validated": True,
             "tables_used": tables_used,
-            "schema_context_type": "static_v1",
+            "schema_context_type": "dynamic_v1",
+            "schema_tables_available": schema_tables_available,
         },
     }
 
