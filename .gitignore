@@ -4,3 +4,4 @@ virtual/
 app/__pycache__/*
 logs/app.log
 temp.py
+docker-compose.yml
