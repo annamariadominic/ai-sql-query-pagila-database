@@ -25,6 +25,8 @@ Rules:
 - Only generate a read-only query.
 - If the question asks for highest and lowest, you may use ORDER BY and LIMIT or CTEs.
 - If the user asks for analysis over time, return the aggregated data needed for analysis.
+- Only use date/time functions like EXTRACT when the column is actually a date, timestamp, or interval type.
+- If a column already stores a year as a numeric/integer value, use it directly.
 
 User question:
 {question}
