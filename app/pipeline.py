@@ -34,6 +34,7 @@ def run_query_pipeline(question: str) -> dict:
         rows = run_sql(sql)
     except Exception as e:
         logger.exception("Initial SQL execution failed")
+        logger.info("Entered SQL repair path")
         repair_attempted = True
         repair_error = str(e)
 
