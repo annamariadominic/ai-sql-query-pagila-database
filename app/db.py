@@ -3,6 +3,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from app.config import settings
 from app.logging_utils import get_logger
+from decimal import Decimal
 
 logger = get_logger(__name__)
 
@@ -19,6 +20,14 @@ def get_connection():
         password=settings.DB_PASSWORD,
     )
 
+def normalize_value(value):
+    if isinstance(value, Decimal):
+        return round(float(value), 2)
+    return value
+
+
+def normalize_row(row: dict) -> dict:
+    return {key: normalize_value(value) for key, value in row.items()}
 
 def run_sql(sql: str) -> list[dict[str, Any]]:
     logger.info(f"Executing SQL: {sql}")
@@ -27,7 +36,7 @@ def run_sql(sql: str) -> list[dict[str, Any]]:
             cur.execute(sql)
             rows = cur.fetchall()
             logger.info(f"Query returned {len(rows)} rows")
-            return [dict(row) for row in rows]
+            return [normalize_row(dict(row)) for row in rows]
 
 
 def get_schema_metadata() -> dict:
