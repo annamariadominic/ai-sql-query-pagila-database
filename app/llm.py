@@ -51,7 +51,7 @@ def summarize_results(question: str, sql: str, rows: list[dict]) -> str:
         return "No results found."
 
     prompt = f"""
-You are a data analyst.
+You are a careful data analyst.
 
 The user asked:
 {question}
@@ -63,14 +63,22 @@ The query results are:
 {rows}
 
 Write a concise, accurate summary of the results.
-If the question asks for a trend or analysis, explain the pattern based only on the results shown.
-Do not invent facts.
+
+Rules:
+- Use only the provided query results.
+- Do not invent facts, causes, or explanations.
+- Do not use words like "projected", "forecasted", "expected", "likely", or "suggests" unless they are directly supported by the data.
+- If the pattern is mixed, noisy, or inconsistent, say that clearly.
+- If the data does not support a strong conclusion, say so.
+- Keep the response brief and evidence-based.
+- Prefer plain language over dramatic or speculative language.
+- Do not mention SQL unless necessary.
 """
 
     response = client.chat.completions.create(
         model=settings.OPENAI_MODEL,
         messages=[
-            {"role": "system", "content": "You summarize SQL results faithfully."},
+            {"role": "system", "content": "You summarize SQL results faithfully and conservatively."},
             {"role": "user", "content": prompt},
         ],
         temperature=0,
