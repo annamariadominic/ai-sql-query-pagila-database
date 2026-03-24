@@ -5,7 +5,7 @@ from app.schemas import QueryRequest, QueryResponse
 
 logger = get_logger(__name__)
 
-app = FastAPI(title="Tetrix Take-Home Query API")
+app = FastAPI(title="Take-Home Assignment - Query API")
 
 
 @app.get("/health")
