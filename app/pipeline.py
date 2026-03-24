@@ -39,3 +39,4 @@ def run_query_pipeline(question: str) -> dict:
 
     logger.info(f"Pipeline complete for question: {question}")
     return response
+    
