@@ -66,7 +66,7 @@ def get_schema_metadata() -> dict:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
                 """
-                SELECT table_name, column_name, ordinal_position
+                SELECT table_name, column_name, data_type, ordinal_position
                 FROM information_schema.columns
                 WHERE table_schema = 'public'
                 ORDER BY table_name, ordinal_position;
@@ -99,7 +99,8 @@ def get_schema_metadata() -> dict:
         table_name = row["table_name"]
         if table_name not in allowed_tables:
             continue
-        tables.setdefault(table_name, []).append(row["column_name"])
+        column_repr = f"{row['column_name']} ({row['data_type']})"
+        tables.setdefault(table_name, []).append(column_repr)
 
     foreign_keys = []
     for row in fk_rows:
