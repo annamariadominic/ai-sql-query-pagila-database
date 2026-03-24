@@ -70,6 +70,8 @@ Task:
 - Do not include markdown fences.
 - Only generate a read-only query.
 - Prefer explicit JOINs.
+- Only use date/time functions like EXTRACT when the column is actually a date, timestamp, or interval type.
+- If a column already stores a year as a numeric/integer value, use it directly.
 """
 
     response = client.chat.completions.create(
